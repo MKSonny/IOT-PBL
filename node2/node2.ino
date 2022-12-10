@@ -192,17 +192,14 @@ void loop() {
   //   WaterStop();
   // }
   
-#if CODE == PING
-      //L은 조도센서를 의미
-      String light = 'L' + String(Photoresistor());
-      // 온도
-      String temp = 'T' + String(tf); //+ "aa";
-      // 습도
-      String humid = 'H' + String(hf); //+ "bb";
-      // 토양 습도
-      String soil_str = 'S' + String(soil);
-      // 팬이 켜졌는지
-      String fan_info = 'F' + String(fan_status);
+#if CODE == PING         
+       
+      String ver = SNIPE.lora_recv();
+      if (ver[0] == '2') {
+      String light = 'L' + String(Photoresistor()); // 조도
+      String temp = 'T' + String(tf); // 온도
+      String humid = 'H' + String(hf); // 습도
+      String soil_str = 'S' + String(soil); // 토양 습도
 
       String msg = "2," + soil_str + ',' + light + ',' + humid + ',' + temp;
 
@@ -210,28 +207,12 @@ void loop() {
         {
            DebugSerial.println("send success");
            DebugSerial.println("msg => " + msg);
-          
-          //String ver = SNIPE.lora_recv();
-          //DebugSerial.println(ver);
-
-        /*
-          if (ver.charAt(0) == 'S')
-          {
-            DebugSerial.println("recv success");
-            //DebugSerial.println(SNIPE.lora_getRssi());
-            //DebugSerial.println(SNIPE.lora_getSnr());            
-          }
-          else
-          {
-            DebugSerial.println("recv fail");
-            delay(500);
-          }
-        */
         }
-       delay(100);     
-       
-       String ver = SNIPE.lora_recv();
-        String tempEdit = ver.substring(1, 3);
+
+       delay(100);           
+
+       } else {
+        String tempEdit = ver.substring(1, 3); 
         String waterEdit = ver.substring(5, 7);
         //T30,S30
         //String[] ver_arry = ver.split(,); //1218
@@ -251,7 +232,9 @@ void loop() {
         if (testing2 == 'S') {
           soilEdit = waterEdit.toFloat();
           DebugSerial.println(testing2);
-        }  
+        }         
+       }
+          
        
 #elif CODE == PONG
         String ver = SNIPE.lora_recv();
