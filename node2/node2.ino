@@ -48,6 +48,18 @@ void TurnA(int x, int y){
   digitalWrite(y,HIGH);
 }
 
+void SetUpLed() {
+  pinMode(LED_PIN, OUTPUT);
+}
+
+void LedOn() {
+  digitalWrite(LED_PIN, HIGH);
+}
+
+void LedOff() {
+  digitalWrite(LED_PIN, LOW);
+}
+
 //팬모터가 y방향으로 회전
 void TurnB(int x, int y){
   digitalWrite(x,HIGH);
@@ -100,8 +112,9 @@ bool fan_status = 0;
 bool water_status = 0;
 
 void setup() {
-  SetUpWater();
   ATSerial.begin(115200); 
+  SetUpLed();
+  SetUpWater();
   dht.begin();
   SetUpFan();
   StopFan();
@@ -147,6 +160,13 @@ void setup() {
 
 
 void loop() {
+
+  if (Photoresistor() > 2000) {
+    LedOn();
+  }
+  else {
+    LedOff();
+  }
 
   if (soilEdit > 40.0f) {
     WaterStart();
