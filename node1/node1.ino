@@ -174,13 +174,13 @@ void loop() {
 #if CODE == PING         
        
       String ver = SNIPE.lora_recv();
-      if (ver[0] == '2') {
+      if (ver[0] == '1') {
       String light = 'L' + String(Photoresistor()); // 조도
       String temp = 'T' + String(tf); // 온도
       String humid = 'H' + String(hf); // 습도
       String soil_str = 'S' + String(soil); // 토양 습도
 
-      String msg = "2," + soil_str + ',' + light + ',' + humid + ',' + temp;
+      String msg = "1," + soil_str + ',' + light + ',' + humid + ',' + temp;
 
         if (SNIPE.lora_send(msg))
         {
