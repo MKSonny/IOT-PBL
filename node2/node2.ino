@@ -30,7 +30,7 @@
 #define FAN_PIN7 7
 
 float fanEdit = 30.0f;
-float soilEdit = 30.0f;
+int soilEdit;
 
 // 토양센서 500이 최대
 
@@ -157,46 +157,53 @@ void setup() {
   DebugSerial.println("SNIPE LoRa PingPong Test");
 }
 
-
+float tf = 0.0f;
 
 void loop() {
-
-  if (Photoresistor() > 2000) {
+  //String light = 'L' + String(Photoresistor());
+  //DebugSerial.println("temp"+t);
+int soil = analogRead(SOIL_PIN);
+  if (Photoresistor() < 10) {
     LedOn();
   }
   else {
     LedOff();
   }
-
-  if (soilEdit > 40.0f) {
+String vale(soilEdit);  
+  // 990 > 1010
+  DebugSerial.println("soilEdit "+vale);  
+  if (soilEdit > soil) {
     WaterStart();
   }
   else {
     WaterStop();
   }
-  if (fanEdit > 38.0f) {
+  if (fanEdit < tf) {
     StartFan();
   }
   else {
     StopFan();
   }
-  delay(100);
+  //delay(10);
   
   // 온습도 센서
    float hf = dht.readHumidity();
-   float tf = dht.readTemperature();//읽은 온습도값
+   tf = dht.readTemperature();//읽은 온습도값
 
   String h = String(hf); // 습도
   String t = String(tf); // 온도
 
-  int soil = analogRead(SOIL_PIN);
+  
+  //DebugSerial.println(soil);
   
 #if CODE == PING         
-       
+      //DebugSerial.println("temp"+t);
       String ver = SNIPE.lora_recv();
+      DebugSerial.println(ver);      
       if (ver[0] == '2') {
       String light = 'L' + String(Photoresistor()); // 조도
       String temp = 'T' + String(tf); // 온도
+
       String humid = 'H' + String(hf); // 습도
       String soil_str = 'S' + String(soil); // 토양 습도
 
@@ -208,16 +215,17 @@ void loop() {
            DebugSerial.println("msg => " + msg);
         }
 
-       delay(100);           
+       delay(10);           
 
-       } else {
+       } 
+       if (ver[0] == 'T') {
         String tempEdit = ver.substring(1, 3); 
-        String waterEdit = ver.substring(5, 7);
-        //T30,S30
+        String waterEdit = ver.substring(5, 8);
+        //T30,S800
         //String[] ver_arry = ver.split(,); //1218
 
         // T30,S30
-        delay(100);
+        delay(10);
 
         DebugSerial.println(ver);
         char testing1 = ver[0];
@@ -225,12 +233,12 @@ void loop() {
 
         if (testing1 == 'T') {
           fanEdit = tempEdit.toFloat();
-          DebugSerial.println(testing1);
+          //DebugSerial.println(testing1);
         }
 
         if (testing2 == 'S') {
           soilEdit = waterEdit.toFloat();
-          DebugSerial.println(testing2);
+          //DebugSerial.println(testing2);
         }         
        }
           
@@ -243,7 +251,7 @@ void loop() {
         //String[] ver_arry = ver.split(,); //1218
 
         // T30,S30
-        delay(100);
+        delay(10);
 
         DebugSerial.println(ver);
         String testing1 = ver[0];
@@ -273,10 +281,10 @@ void loop() {
           else
           {
             DebugSerial.println("send fail");
-            delay(500);
+            delay(10);
           }
         }
-       delay(100);
+       delay(10);
       
 #endif
 }
